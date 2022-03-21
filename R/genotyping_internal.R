@@ -104,9 +104,9 @@ trim_merged <- function() {
                   mid_name = stringr::str_sub(list.files("temp/fastq_merged", full.names = F),
                                      start = 1,
                                      end = 5)),
-        .f = \(merged_fp, mid_name) {
+        .f = \(merged_fp, mid_name, tmm = trimmomatic) {
           cmd <- paste0("java -jar ",
-                        trimmomatic,
+                        tmm,
                         " SE ",
                         merged_fp,
                         " temp/fastq_trimmed/",
