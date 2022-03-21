@@ -2,6 +2,6 @@
 
 * First working version of the package. 
 
-# genotyping.functions 0.0.0.9001
+# genotyping.functions 0.0.0.9001-3
 
 * tweaked trimmomatic 
