@@ -100,6 +100,7 @@ merge_read_pairs <- function() {
 #' @importFrom stringr str_sub
 trim_merged <- function() {
   trimmomatic <- system.file("java/Trimmomatic-0.38/trimmomatic-0.38.jar", package = "genotyping.functions")
+  return(trimmomatic)
   purrr::pwalk(.l = list(merged_fp = list.files("temp/fastq_merged", full.names = T),
                   mid_name = stringr::str_sub(list.files("temp/fastq_merged", full.names = F),
                                      start = 1,
