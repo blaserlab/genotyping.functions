@@ -49,7 +49,7 @@ break                                                                     #
 blaseRtemplates::git_easy_branch(branch = "brad_working")               #
 devtools::document()
 gert::git_add("*")                                                      #
-gert::git_commit("version 0.0.0.9000")                                    #
+gert::git_commit("version 0.0.0.9001")                                    #
                                                                         #
 blaseRtemplates::git_update_branch()                                    #
                                                                         #
