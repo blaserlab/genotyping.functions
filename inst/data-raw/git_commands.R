@@ -60,8 +60,9 @@ gert::git_branch_delete(branch = "brad_working")                        #
                                                                         #
 blaseRtemplates::git_push_all()                                         #
 
-blaseRtemplates::easy_install("blaserlab/genotyping.functions",
-                              how = "new_or_update")
+# build and insert into repo
+blaseRtemplates::dratify(repo_name = "blaserX", 
+			 repo_dir = "~/network/X/Labs/Blaser/share/data/R/drat/")
 ###########################################################################
 
 

@@ -24,10 +24,3 @@ Imports:
     rtracklayer,
     stringr,
     tools
-Remotes: 
-    bioc::AnnotationDbi,
-    bioc::Biostrings,
-    bioc::CrispRVariants,
-    bioc::GenomicRanges,
-    bioc::IRanges,
-    bioc::rtracklayer
