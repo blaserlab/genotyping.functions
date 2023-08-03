@@ -42,6 +42,7 @@ copy_and_decompress <- function(network_directory) {
 
 }
 
+
 #' @importFrom fs file_copy
 #' @importFrom stringr str_replace
 split_fastq_pairs <- function() {

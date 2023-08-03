@@ -1,6 +1,6 @@
 Package: genotyping.functions
 Title: Supplies Functios For Zebrafish Genotyping 
-Version: 0.0.0.9003
+Version: 0.0.0.9004
 Authors@R: 
     person("Brad", "Blaser", , "bradley.blaser@osumc.edu", role = c("aut", "cre"),
            comment = c(ORCID = "0000-0002-3168-5423"))
@@ -8,7 +8,7 @@ Description: What the package does (one paragraph).
 License: MIT + file LICENSE
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.1.2
+RoxygenNote: 7.2.3
 URL: https://github.com/blaserlab/genotyping.functions
 BugReports: https://github.com/blaserlab/genotyping.functions/issues
 Imports:

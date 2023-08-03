@@ -1,4 +1,5 @@
 #' @importFrom rtracklayer import
+#' @importFrom GenomicRanges seqnames
 locus_genome_lookup <- function(locus_name, file_name){
   gr <- rtracklayer::import(file_name)
   filtered <- gr[gr$name == locus_name]
