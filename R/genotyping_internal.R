@@ -182,6 +182,13 @@ align <-
     } else {
       mid_names <- stringr::str_sub(cutadapt_names, 1, 5)
     }
+    # check if the genome is indexed.  Essentially this will
+    # force indexing of small fasta transgenes.
+    if (!fs::path(genome, ".amb") %in% fs::dir_ls(fs::path_dir(genome))) {
+      cmd <- paste0("bwa index ", genome)
+      message(cmd, "\n")
+      system(cmd)
+    }
 
     purrr::walk2(
       .x = list.files("temp/fastq_cutadapt", full.names = T),
@@ -248,7 +255,7 @@ make_target_region <- function(target, genome_fa, bed) {
 #' @importFrom GenomicRanges strand
 #' @importFrom CrispRVariants readsToTarget
 #' @importFrom stringr str_replace
-make_crispr_set <- function(input_list) {
+make_crispr_set <- function(input_list, split_snv = TRUE) {
 
   if (as.character(GenomicRanges::strand(input_list$bed_extended)) == "-") {
     target_loc <- 13
@@ -258,16 +265,31 @@ make_crispr_set <- function(input_list) {
 
   target_use <- input_list$bed_extended
   GenomicRanges::strand(target_use) <- "+"
-  crispr_set <- CrispRVariants::readsToTarget(
-    reads = list.files("temp/bam_temp", pattern = "*.bam$", full.names = T),
-    target = target_use,
-    reference = input_list$reference,
-    chimera.to.target = 20,
-    names = stringr::str_replace(string = list.files("temp/bam_temp", pattern = "*.bam$"), pattern = ".bam", replacement = ""),
-    target.loc = target_loc,
-    collapse.pairs = TRUE,
-    split.snv = TRUE #split.snv=FALSE adds SNVs into no variant count
-  )
+
+  if (split_snv) {
+    crispr_set <- CrispRVariants::readsToTarget(
+      reads = list.files("temp/bam_temp", pattern = "*.bam$", full.names = T),
+      target = target_use,
+      reference = input_list$reference,
+      chimera.to.target = 20,
+      names = stringr::str_replace(string = list.files("temp/bam_temp", pattern = "*.bam$"), pattern = ".bam", replacement = ""),
+      target.loc = target_loc,
+      collapse.pairs = TRUE,
+      split.snv = TRUE #split.snv=FALSE adds SNVs into no variant count
+    )
+  } else {
+    crispr_set <- CrispRVariants::readsToTarget(
+      reads = list.files("temp/bam_temp", pattern = "*.bam$", full.names = T),
+      target = target_use,
+      reference = input_list$reference,
+      chimera.to.target = 20,
+      names = stringr::str_replace(string = list.files("temp/bam_temp", pattern = "*.bam$"), pattern = ".bam", replacement = ""),
+      target.loc = target_loc,
+      collapse.pairs = TRUE,
+      split.snv = FALSE #split.snv=FALSE adds SNVs into no variant count
+    )
+  }
+
   return_list <- list(crispr_set, input_list$bed_extended)
   names(return_list) <- c("CrisprSet", "bed_extended")
   return(return_list)
@@ -281,8 +303,7 @@ make_crispr_set <- function(input_list) {
 #' @importFrom grid unit
 plot_crispr_set <-
   function(input_list,
-           txdb = system.file("extdata/GRCz11.97_txdb.sqlite",
-                              package = "BSgenome.Drerio.blaserlabgenotyping.dr11"),
+           txdb = txdb,
            threshold = read_threshold) {
     while (!is.null(dev.list()))
       dev.off()
@@ -300,26 +321,51 @@ plot_crispr_set <-
 
     }
     crispr_set <- input_list$CrisprSet
-    txdb <- AnnotationDbi::loadDb(txdb)
-    p <- CrispRVariants::plotVariants(
-      obj = crispr_set,
-      txdb = txdb,
-      col.wdth.ratio = c(1, 1),
-      plotAlignments.args = list(
-        pam.start = pam_start,
-        target.loc = target_loc,
-        guide.loc = IRanges::IRanges(guide_start, guide_end),
-        min.count = threshold,
-        tile.height = 0.55
-      ),
-      plotFreqHeatmap.args = list(
-        min.count = threshold,
-        plot.text.size = 3,
-        x.size = 8,
-        legend.text.size = 8,
-        legend.key.height = grid::unit(0.5, "lines")
+    if (!is.null(txdb)) {
+      txdb <- AnnotationDbi::loadDb(txdb)
+
+      p <- CrispRVariants::plotVariants(
+        obj = crispr_set,
+        txdb = txdb,
+        col.wdth.ratio = c(1, 1),
+        plotAlignments.args = list(
+          pam.start = pam_start,
+          target.loc = target_loc,
+          guide.loc = IRanges::IRanges(guide_start, guide_end),
+          min.count = threshold,
+          tile.height = 0.55
+        ),
+        plotFreqHeatmap.args = list(
+          min.count = threshold,
+          plot.text.size = 3,
+          x.size = 8,
+          legend.text.size = 8,
+          legend.key.height = grid::unit(0.5, "lines")
+        )
       )
-    )
+    } else {
+      p <- CrispRVariants::plotVariants(
+        obj = crispr_set,
+        txdb = NULL,
+        col.wdth.ratio = c(1, 1),
+        plotAlignments.args = list(
+          pam.start = pam_start,
+          target.loc = target_loc,
+          guide.loc = IRanges::IRanges(guide_start, guide_end),
+          min.count = threshold,
+          tile.height = 0.55
+        ),
+        plotFreqHeatmap.args = list(
+          min.count = threshold,
+          plot.text.size = 3,
+          x.size = 8,
+          legend.text.size = 8,
+          legend.key.height = grid::unit(0.5, "lines")
+        )
+      )
+    }
+
+
     dev.copy2pdf(file = "tmp_output/crispr_plot.pdf",
                  width = 17,
                  height = 11)

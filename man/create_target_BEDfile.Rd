@@ -4,7 +4,12 @@
 \alias{create_target_BEDfile}
 \title{Create a New Entry on the Master Bedfile}
 \usage{
-create_target_BEDfile(query, crispr_target_name)
+create_target_BEDfile(
+  query,
+  crispr_target_name,
+  genome = c("Drerio", "GFP"),
+  master_bed = "data-raw/master.bed"
+)
 }
 \arguments{
 \item{query}{the guide RNA sequence, using DNA nucleotides}

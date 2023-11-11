@@ -26,11 +26,33 @@ conflict_prefer("Drerio", "blaseRdata")
 
 # current -----------------------------------------------------------------
 
-genotyping_main(network_directory = "/network/X/Labs/Blaser/staff/ngs_archive/oca2_DC_20230227",
-                crispr_target = "OCA2_CRISPR",bed = "~/brad_workspace/genotyping/data-raw/master.bed" )
+genotyping_main(network_directory = "~/network/X/Labs/Blaser/staff/ngs_archive/gfp_DF/fastq/sample1",
+                crispr_target = "GFP_TARGET_2",bed = "inst/data-raw/master.bed", genome = "GFP", multiplex = FALSE)
 
+genotyping_main(network_directory = "~/network/X/Labs/Blaser/staff/ngs_archive/gfp_DF/fastq/sample2",
+                crispr_target = "GFP_TARGET_2",bed = "inst/data-raw/master.bed", genome = "GFP", multiplex = FALSE)
 
-# history -----------------------------------------------------------------
+genotyping_main(network_directory = "~/network/X/Labs/Blaser/staff/ngs_archive/gfp_DF/fastq/sample3",
+                crispr_target = "GFP_TARGET_2",bed = "inst/data-raw/master.bed", genome = "GFP", multiplex = FALSE)
+
+genotyping_main(network_directory = "~/network/X/Labs/Blaser/staff/ngs_archive/gfp_DF/fastq/sample1",
+                crispr_target = "GFP_TARGET_4",bed = "inst/data-raw/master.bed", genome = "GFP", multiplex = FALSE)
+
+genotyping_main(network_directory = "~/network/X/Labs/Blaser/staff/ngs_archive/gfp_DF/fastq/sample2",
+                crispr_target = "GFP_TARGET_4",bed = "inst/data-raw/master.bed", genome = "GFP", multiplex = FALSE)
+
+genotyping_main(network_directory = "~/network/X/Labs/Blaser/staff/ngs_archive/gfp_DF/fastq/sample3",
+                crispr_target = "GFP_TARGET_4",bed = "inst/data-raw/master.bed", genome = "GFP", multiplex = FALSE)
+
+genotyping_main(network_directory = "~/network/X/Labs/Blaser/staff/ngs_archive/gfp_DF/fastq/sample1",
+                crispr_target = "GFP_TARGET_7",bed = "inst/data-raw/master.bed", genome = "GFP", multiplex = FALSE)
+
+genotyping_main(network_directory = "~/network/X/Labs/Blaser/staff/ngs_archive/gfp_DF/fastq/sample2",
+                crispr_target = "GFP_TARGET_7",bed = "inst/data-raw/master.bed", genome = "GFP", multiplex = FALSE)
+
+genotyping_main(network_directory = "~/network/X/Labs/Blaser/staff/ngs_archive/gfp_DF/fastq/sample3",
+                crispr_target = "GFP_TARGET_7",bed = "inst/data-raw/master.bed", genome = "GFP", multiplex = FALSE)
+# h# history -----------------------------------------------------------------
  # genotyping_main(network_directory = "~/network/X/Labs/Blaser/ngs_archive/prkcha_CW",
  #                 crispr_target = "PRKCHA_CRISPR")
 

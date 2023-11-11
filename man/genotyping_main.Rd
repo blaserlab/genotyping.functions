@@ -6,14 +6,20 @@
 \usage{
 genotyping_main(
   crispr_target,
+  genome = c("Drerio", "GFP"),
   network_directory,
   multiplex = TRUE,
   read_threshold = 25,
-  bed = "data-raw/master.bed"
+  bed = "data-raw/master.bed",
+  split_snv = TRUE,
+  txdb = system.file("extdata/GRCz11.97_txdb.sqlite", package =
+    "BSgenome.Drerio.blaserlabgenotyping.dr11")
 )
 }
 \arguments{
 \item{crispr_target}{The name of the crispr target locus.  Must be present on the master BEDfile}
+
+\item{genome}{The genome to use.  Can be either Drerio or GFP.  Default is Drerio.}
 
 \item{network_directory}{Network directory containing fastqs.  The fastqs can be nested in a subdirectory; the output will be placed in the directory named.}
 
@@ -22,6 +28,10 @@ genotyping_main(
 \item{read_threshold}{Remove alleles with read counts below this threshold, Default: 25}
 
 \item{bed}{master bedfile to use, Default: 'data-raw/master.bed'}
+
+\item{split_snv}{If TRUE, will count SNVs as variant alleles.}
+
+\item{txdb}{transcriptome database to use.  If using a nonstandard transgene, should be set to NULL.}
 }
 \value{
 Nothing; writes out to the network directory.

@@ -5,3 +5,7 @@
 # genotyping.functions 0.0.0.9001-3
 
 * tweaked trimmomatic 
+
+# genotyping.functions 0.0.0.9005
+
+* added options to genotype transgenes separate from BSgenome builds
