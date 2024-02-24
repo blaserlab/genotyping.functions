@@ -9,3 +9,7 @@
 # genotyping.functions 0.0.0.9005
 
 * added options to genotype transgenes separate from BSgenome builds
+
+# genotyping.functions 0.0.0.9006
+
+* fixed bugs

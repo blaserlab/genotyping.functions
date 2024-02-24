@@ -13,7 +13,8 @@ genotyping_main(
   bed = "data-raw/master.bed",
   split_snv = TRUE,
   txdb = system.file("extdata/GRCz11.97_txdb.sqlite", package =
-    "BSgenome.Drerio.blaserlabgenotyping.dr11")
+    "BSgenome.Drerio.blaserlabgenotyping.dr11"),
+  cutadapt_path = "/workspace/python/anaconda3/envs/cutadaptenv/bin/cutadapt"
 )
 }
 \arguments{
@@ -32,6 +33,8 @@ genotyping_main(
 \item{split_snv}{If TRUE, will count SNVs as variant alleles.}
 
 \item{txdb}{transcriptome database to use.  If using a nonstandard transgene, should be set to NULL.}
+
+\item{cutadapt_path}{The path to your cutadapt binary.  Find this by running $ which cutadapt in your terminal.}
 }
 \value{
 Nothing; writes out to the network directory.

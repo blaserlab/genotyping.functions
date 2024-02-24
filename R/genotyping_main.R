@@ -8,6 +8,7 @@
 #' @param bed master bedfile to use, Default: 'data-raw/master.bed'
 #' @param split_snv If TRUE, will count SNVs as variant alleles.
 #' @param txdb transcriptome database to use.  If using a nonstandard transgene, should be set to NULL.
+#' @param cutadapt_path The path to your cutadapt binary.  Find this by running $ which cutadapt in your terminal.
 #' @return Nothing; writes out to the network directory.
 #' @seealso
 #'  \code{\link[rtracklayer]{character(0)}}
@@ -24,7 +25,9 @@ genotyping_main <- function(crispr_target,
                             bed = "data-raw/master.bed",
                             split_snv = TRUE,
                             txdb = system.file("extdata/GRCz11.97_txdb.sqlite",
-                              package = "BSgenome.Drerio.blaserlabgenotyping.dr11")) {
+                              package = "BSgenome.Drerio.blaserlabgenotyping.dr11"),
+                            cutadapt_path = "/workspace/python/anaconda3/envs/cutadaptenv/bin/cutadapt"
+                            ) {
   genome <- match.arg(genome, choices = c("Drerio", "GFP"))
   bed_check <- rtracklayer::import(bed, format = "bed")
 
@@ -46,7 +49,8 @@ genotyping_main <- function(crispr_target,
 
   trim_merged()
 
-  cutadapt(multiplex = multiplex)
+  cutadapt(multiplex = multiplex,
+           path = cutadapt_path)
 
   fastqc()
 
@@ -60,8 +64,8 @@ genotyping_main <- function(crispr_target,
                      genome_fa = gen,
                      bed = bed_check) |>
     make_crispr_set() |>
-    plot_crispr_set(threshold = read_threshold) |>
-    plot_crispr_bars() |>
+    plot_crispr_set(threshold = read_threshold,
+                    tx = txdb) |>
     save_output(target = crispr_target,
                 nd = network_directory)
 

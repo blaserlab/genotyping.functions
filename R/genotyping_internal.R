@@ -13,8 +13,9 @@ make_genotyping_directories <- function() {
 }
 
 
+
 #' @importFrom stringr str_extract
-#' @importFrom fs file_copy
+#' @importFrom fs file_copy path
 #' @importFrom purrr walk
 copy_and_decompress <- function(network_directory) {
   # find the fastqs
@@ -30,7 +31,7 @@ copy_and_decompress <- function(network_directory) {
                              pattern = "(\\w|\\.)*$")
   # copy over the fastqs
   fs::file_copy(fastq_fp,
-            file.path("temp", "fastq", fastq_names))
+            fs::path("temp", "fastq", fastq_names))
 
   purrr::walk(.x = list.files("temp/fastq"),
        .f = \(x) {
@@ -41,6 +42,7 @@ copy_and_decompress <- function(network_directory) {
        })
 
 }
+
 
 
 #' @importFrom fs file_copy
@@ -71,6 +73,11 @@ split_fastq_pairs <- function() {
                            replacement = "fastq_split_R2")
   )
 }
+
+
+
+
+
 
 #' @importFrom purrr pwalk
 #' @importFrom stringr str_sub
@@ -116,13 +123,12 @@ trim_merged <- function() {
                         "LEADING:3 TRAILING:3 SLIDINGWINDOW:4:15 MINLEN:100")
           message(cmd, "\n")
           system(cmd)
-        })
-}
-
-#' @importFrom stringr str_sub
+        })} #' @importFrom stringr str_sub
 #' @importFrom purrr walk2
 #' @importFrom fs file_copy
-cutadapt <- function(multiplex) {
+#' @importFrom reticulate use_condaenv
+cutadapt <- function(multiplex,
+                     path) {
   trimmed_fp <- list.files("temp/fastq_trimmed", full.names = T)
   trimmed_names <- list.files("temp/fastq/trimmed", full.names = F)
   mid_name <- stringr::str_sub(
@@ -130,6 +136,7 @@ cutadapt <- function(multiplex) {
     start = 1,
     end = 5
   )
+  # set conda env
   if (multiplex) {
     purrr::walk2(.x = trimmed_fp,
           .y = mid_name,
@@ -137,7 +144,8 @@ cutadapt <- function(multiplex) {
       .f = \(x, y, rf = system.file("extdata/barcodes.fasta", package = "BSgenome.Drerio.blaserlabgenotyping.dr11")) {
           cmd <-
             paste0(
-              "cutadapt -g file:",
+              path,
+              " -g file:",
               rf,
               " -o temp/fastq_cutadapt/{name}.",
               y,
@@ -164,6 +172,9 @@ fastqc <- function() {
          system(cmd)
        })
 }
+
+
+
 
 
 
@@ -256,13 +267,11 @@ make_target_region <- function(target, genome_fa, bed) {
 #' @importFrom CrispRVariants readsToTarget
 #' @importFrom stringr str_replace
 make_crispr_set <- function(input_list, split_snv = TRUE) {
-
   if (as.character(GenomicRanges::strand(input_list$bed_extended)) == "-") {
     target_loc <- 13
   } else {
     target_loc <- 30
   }
-
   target_use <- input_list$bed_extended
   GenomicRanges::strand(target_use) <- "+"
 
@@ -298,12 +307,12 @@ make_crispr_set <- function(input_list, split_snv = TRUE) {
 
 #' @importFrom GenomicRanges strand
 #' @importFrom AnnotationDbi loadDb
-#' @importFrom CrispRVariants plotVariants
+#' @importFrom CrispRVariants plotVariants variantCounts barplotAlleleFreqs
 #' @importFrom IRanges IRanges
 #' @importFrom grid unit
 plot_crispr_set <-
   function(input_list,
-           txdb = txdb,
+           tx = txdb,
            threshold = read_threshold) {
     while (!is.null(dev.list()))
       dev.off()
@@ -320,13 +329,11 @@ plot_crispr_set <-
       guide_end <- 33
 
     }
-    crispr_set <- input_list$CrisprSet
-    if (!is.null(txdb)) {
-      txdb <- AnnotationDbi::loadDb(txdb)
-
+    if (!is.null(tx)) {
+      tx <- AnnotationDbi::loadDb(tx)
       p <- CrispRVariants::plotVariants(
-        obj = crispr_set,
-        txdb = txdb,
+        obj = input_list$CrisprSet,
+        txdb = tx,
         col.wdth.ratio = c(1, 1),
         plotAlignments.args = list(
           pam.start = pam_start,
@@ -345,7 +352,7 @@ plot_crispr_set <-
       )
     } else {
       p <- CrispRVariants::plotVariants(
-        obj = crispr_set,
+        obj = input_list$CrisprSet,
         txdb = NULL,
         col.wdth.ratio = c(1, 1),
         plotAlignments.args = list(
@@ -370,36 +377,30 @@ plot_crispr_set <-
                  width = 17,
                  height = 11)
     dev.off()
-    return(crispr_set)
+    var_counts <-
+      CrispRVariants::variantCounts(input_list$CrisprSet)
+    CrispRVariants::barplotAlleleFreqs(var_counts)
+    dev.copy2pdf(
+      file = paste0("tmp_output/crispr_barplot.pdf"),
+      width = 11,
+      height = 8.5
+    )
+    dev.off()
+    return(input_list)
 
 
   }
-
-
-#' @importFrom CrispRVariants variantCounts barplotAlleleFreqs
-plot_crispr_bars <- function(crispr_set) {
-  while (!is.null(dev.list()))
-    dev.off()
-  var_counts <- CrispRVariants::variantCounts(crispr_set)
-  CrispRVariants::barplotAlleleFreqs(var_counts)
-  dev.copy2pdf(
-    file = paste0("tmp_output/crispr_barplot.pdf"),
-    width = 11,
-    height = 8.5
-  )
-  dev.off()
- return(crispr_set)
-}
 
 #' @importFrom stringr str_replace_all
 #' @importFrom fs dir_copy
 #' @importFrom purrr map_chr
 #' @importFrom tools md5sum
 save_output <-
-  function(crispr_set,
+  function(input_list,
            cleanup = TRUE,
            target = crispr_target,
            nd = network_directory) {
+    crispr_set <- input_list$CrisprSet
     save(crispr_set, file = "tmp_output/crispr_set.rda")
     dt_stamp <-
       stringr::str_replace_all(string = Sys.time(),
