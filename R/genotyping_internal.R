@@ -266,7 +266,7 @@ make_target_region <- function(target, genome_fa, bed) {
 #' @importFrom GenomicRanges strand
 #' @importFrom CrispRVariants readsToTarget
 #' @importFrom stringr str_replace
-make_crispr_set <- function(input_list, split_snv = TRUE) {
+make_crispr_set <- function(input_list, split_snv) {
   if (as.character(GenomicRanges::strand(input_list$bed_extended)) == "-") {
     target_loc <- 13
   } else {
@@ -275,7 +275,6 @@ make_crispr_set <- function(input_list, split_snv = TRUE) {
   target_use <- input_list$bed_extended
   GenomicRanges::strand(target_use) <- "+"
 
-  if (split_snv) {
     crispr_set <- CrispRVariants::readsToTarget(
       reads = list.files("temp/bam_temp", pattern = "*.bam$", full.names = T),
       target = target_use,
@@ -284,20 +283,9 @@ make_crispr_set <- function(input_list, split_snv = TRUE) {
       names = stringr::str_replace(string = list.files("temp/bam_temp", pattern = "*.bam$"), pattern = ".bam", replacement = ""),
       target.loc = target_loc,
       collapse.pairs = TRUE,
-      split.snv = TRUE #split.snv=FALSE adds SNVs into no variant count
+      split.snv = split_snv #split.snv=FALSE adds SNVs into no variant count
     )
-  } else {
-    crispr_set <- CrispRVariants::readsToTarget(
-      reads = list.files("temp/bam_temp", pattern = "*.bam$", full.names = T),
-      target = target_use,
-      reference = input_list$reference,
-      chimera.to.target = 20,
-      names = stringr::str_replace(string = list.files("temp/bam_temp", pattern = "*.bam$"), pattern = ".bam", replacement = ""),
-      target.loc = target_loc,
-      collapse.pairs = TRUE,
-      split.snv = FALSE #split.snv=FALSE adds SNVs into no variant count
-    )
-  }
+
 
   return_list <- list(crispr_set, input_list$bed_extended)
   names(return_list) <- c("CrisprSet", "bed_extended")

@@ -4,15 +4,15 @@
 # make a new commit referencing each new instance
 # network directory should point to the directory where you want the results to go
 # network directory should contain fastqs in a subdirectory
+
 library("blaseRtemplates")
 library("blaseRdata")
 library("blaseRtools")
 library("conflicted")
 library("tidyverse")
 library("lazyData")
+library("genotyping.functions")
 library("GenomicRanges")
-devtools::load_all()
-
 conflict_prefer("filter", "dplyr")
 conflict_prefer("lag", "dplyr")
 conflict_prefer("select", "dplyr")
@@ -23,17 +23,38 @@ conflict_prefer("Drerio", "blaseRdata")
 
 # current -----------------------------------------------------------------
 
-genotyping_main(network_directory = "~/network/X/Labs/Blaser/staff/ngs_archive/lrrc32_DG_20240222/sample_1",
-                multiplex = FALSE, crispr_target = "LRRC32_TARGET_2", bed = "inst/data-raw/master.bed")
+genotyping_main(network_directory = fs::path("~/network/X/Labs/Blaser/staff/ngs_archive/velegraki_AA/fastq/E/"),
+                multiplex = TRUE,
+                split_snv = FALSE,
+                crispr_target = "LRRC32_TARGET_2", bed = "inst/data-raw/master.bed")
 
-genotyping_main(network_directory = "~/network/X/Labs/Blaser/staff/ngs_archive/lrrc32_DG_20240222/sample_2", multiplex = FALSE, crispr_target = "LRRC32_TARGET_7", bed = "inst/data-raw/master.bed")
-
-genotyping_main(network_directory = "~/network/X/Labs/Blaser/staff/ngs_archive/btk_crispr_set2_DD_20230907/",
-                crispr_target = "BTK_CRISPR_1",
-                bed = "inst/data-raw/master.bed")
-
-
+load("~/network/X/Labs/Blaser/staff/ngs_archive/velegraki_AA/fastq/E/LRRC32_TARGET_2_2024_10_15_12_23_38.244918/crispr_set.rda")
+crispr_set$pars
+genotyping_main(network_directory = fs::path("~/network/X/Labs/Blaser/staff/ngs_archive/velegraki_AA/fastq/S/"),
+                multiplex = TRUE,
+                split_snv = FALSE,
+                crispr_target = "LRRC32_TARGET_2")
 # history -----------------------------------------------------------------
+# genotyping_main(network_directory = fs::path("~/network/X/Labs/Blaser/staff/ngs_archive/bcor_DK_20240715/"),
+#                 multiplex = TRUE,
+#                 crispr_target = "BCOR_RANK1")
+
+# genotyping_main(network_directory = fs::path("~/network/X/Labs/Blaser/staff/ngs_archive/bcor_DJ_20240617/"),
+#                 multiplex = TRUE,
+#                 crispr_target = "BCOR_RANK1")
+
+
+# genotyping_main(network_directory = fs::path("~/network/X/Labs/Blaser/staff/ngs_archive/bcor_DI_20240524/"),
+#                 multiplex = TRUE,
+#                 crispr_target = "BCOR_RANK1")
+
+# genotyping_main(network_directory = fs::path("~/network/X/Labs/Blaser/staff/ngs_archive/bcor_DH_20240326/"),
+#                 multiplex = TRUE,
+#                 crispr_target = "BCOR_RANK1")
+
+# genotyping_main(network_directory = "~/network/X/Labs/Blaser/staff/ngs_archive/lrrc32_DG_20240222/fastq/sample_1", multiplex = FALSE, crispr_target = "LRRC32_TARGET_2")
+#
+# genotyping_main(network_directory = "~/network/X/Labs/Blaser/staff/ngs_archive/lrrc32_DG_20240222/fastq/sample_2", multiplex = FALSE, crispr_target = "LRRC32_TARGET_7")
 # genotyping_main(network_directory = "~/network/X/Labs/Blaser/staff/ngs_archive/bcor_DE_20231016/fastq/sample1/",multiplex = FALSE, crispr_target = "BCOR_RANK1")
 #
 #

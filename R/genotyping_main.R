@@ -63,7 +63,7 @@ genotyping_main <- function(crispr_target,
   make_target_region(target = crispr_target,
                      genome_fa = gen,
                      bed = bed_check) |>
-    make_crispr_set() |>
+    make_crispr_set(split_snv = split_snv) |>
     plot_crispr_set(threshold = read_threshold,
                     tx = txdb) |>
     save_output(target = crispr_target,

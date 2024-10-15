@@ -13,3 +13,7 @@
 # genotyping.functions 0.0.0.9006
 
 * fixed bugs
+
+# genotyping.functions 0.0.0.9007
+
+* made split_snv work correctly
